@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Platforms</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050a0f;
+      --surface: #0a1520;
+      --surface2: #0e1e30;
+      --border: #1a3050;
+      --accent: #00d4ff;
+      --accent2: #00ff9d;
+      --accent3: #ff6b35;
+      --text: #c8dde8;
+      --text-dim: #5a8099;
+      --mono: 'Space Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
+
+    /* GRID OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* SCANLINES */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      background: rgba(5, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-logo::before {
+      content: '//';
+      color: var(--text-dim);
+    }
+
+    nav a {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+      text-transform: uppercase;
+    }
+
+    nav a:hover { color: var(--accent); }
+
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+
+    /* SECTIONS */
+    section {
+      position: relative;
+      z-index: 2;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+    }
+
+    section.full-width {
+      max-width: none;
+      padding: 0;
+    }
+
+    /* HERO */
+    #home {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6rem 2rem;
+      position: relative;
+      z-index: 2;
+      max-width: none;
+    }
+
+    .hero-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 2rem;
+    }
+
+    .hero-label {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hero-label::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .hero-title {
+      font-family: var(--sans);
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 2rem;
+    }
+
+    .hero-title .accent { color: var(--accent); }
+    .hero-title .dim { color: var(--text-dim); }
+
+    .hero-desc {
+      max-width: 540px;
+      font-size: 1.05rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      margin-bottom: 3rem;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .stat-num {
+      font-family: var(--mono);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 20%;
+      right: 5%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* SECTION HEADERS */
+    .section-tag {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-tag::before {
+      content: '>';
+      color: var(--accent2);
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+    }
+
+    .section-sub {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      margin-bottom: 3rem;
+      max-width: 560px;
+    }
+
+    /* DIVIDER */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0 2rem;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.75rem;
+      transition: border-color 0.3s, background 0.3s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover {
+      border-color: rgba(0,212,255,0.3);
+      background: var(--surface2);
+      transform: translateY(-2px);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-icon::before {
+      content: '';
+      display: block;
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.6rem;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+
+    /* GRID LAYOUTS */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+
+    /* COMPARISON TABLE */
+    .compare-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .compare-col {
+      padding: 2rem;
+      background: var(--surface);
+    }
+
+    .compare-col:first-child {
+      border-right: 1px solid var(--border);
+    }
+
+    .compare-col h3 {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-col:first-child h3 { color: var(--accent); }
+    .compare-col:last-child h3 { color: var(--accent2); }
+
+    .compare-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+    }
+
+    .compare-item::before {
+      content: '→';
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.15rem;
+      flex-shrink: 0;
+    }
+
+    .compare-item p {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .compare-item strong {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* TIMELINE */
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2), transparent);
+    }
+
+    .tl-item {
+      position: relative;
+      padding: 0 0 2.5rem 2rem;
+    }
+
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -0.35rem;
+      top: 0.3rem;
+      width: 8px; height: 8px;
+      border: 1px solid var(--accent);
+      background: var(--bg);
+      border-radius: 50%;
+    }
+
+    .tl-era {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .tl-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .tl-body {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+      max-width: 560px;
+    }
+
+    /* PLATFORM CARDS (larger) */
+    .platform-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .platform-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(0,212,255,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .platform-card:hover {
+      border-color: rgba(0,212,255,0.25);
+      background: var(--surface2);
+    }
+
+    .platform-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 2px;
+      margin-bottom: 1rem;
+    }
+
+    .badge-sql { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
+    .badge-nosql { background: rgba(0,255,157,0.1); color: var(--accent2); border: 1px solid rgba(0,255,157,0.2); }
+    .badge-cloud { background: rgba(255,107,53,0.1); color: var(--accent3); border: 1px solid rgba(255,107,53,0.2); }
+    .badge-newsql { background: rgba(160,100,255,0.1); color: #a064ff; border: 1px solid rgba(160,100,255,0.2); }
+
+    .platform-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .platform-desc {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+    }
+
+    .platform-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.5rem;
+      border-radius: 2px;
+    }
+
+    /* CLOUD CARDS */
+    .cloud-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2rem;
+      transition: all 0.3s;
+    }
+
+    .cloud-card:hover { border-color: rgba(0,212,255,0.2); background: var(--surface2); }
+
+    .cloud-provider {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cloud-name {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .cloud-desc {
+      font-size: 0.87rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+    }
+
+    .cloud-services {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .service-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+
+    .service-item::before {
+      content: '';
+      width: 4px; height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* CHALLENGE CARDS */
+    .challenge-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .challenge-item {
+      background: var(--surface);
+      padding: 1.75rem 2rem;
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 2rem;
+      align-items: start;
+      transition: background 0.2s;
+    }
+
+    .challenge-item:not(:last-child) { border-bottom: 1px solid var(--border); }
+    .challenge-item:hover { background: var(--surface2); }
+
+    .challenge-num {
+      font-family: var(--mono);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--border);
+      line-height: 1;
+    }
+
+    .challenge-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .challenge-body {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+
+    /* CORE TRIO */
+    .trio-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .trio-card:hover { border-color: rgba(0,212,255,0.25); background: var(--surface2); }
+
+    .trio-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 2px;
+      display: inline-block;
+      margin-bottom: 1.25rem;
+    }
+
+    .trio-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.6rem;
+    }
+
+    .trio-desc {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+    }
+
+    .trio-props {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .trio-prop {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .trio-prop:last-child { border-bottom: none; }
+
+    .prop-key { color: var(--text-dim); font-family: var(--mono); }
+    .prop-val { color: #fff; font-weight: 600; }
+
+    /* VIDEO */
+    .video-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .video-frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: 4px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .video-frame iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .video-thumbnail {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .video-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease, filter 0.4s ease;
+      filter: brightness(0.75);
+    }
+
+    .video-thumbnail:hover img {
+      transform: scale(1.03);
+      filter: brightness(0.6);
+    }
+
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .play-btn {
+      transition: transform 0.2s ease;
+    }
+
+    .video-thumbnail:hover .play-btn {
+      transform: scale(1.12);
+    }
+
+    .play-bg {
+      fill: #ff0000;
+      opacity: 0.92;
+      transition: opacity 0.2s;
+    }
+
+    .video-thumbnail:hover .play-bg {
+      opacity: 1;
+    }
+
+    .play-arrow {
+      fill: #fff;
+    }
+
+    .play-label {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(0,0,0,0.5);
+      padding: 0.35rem 0.9rem;
+      border-radius: 2px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .video-meta {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      flex-wrap: wrap;
+    }
+
+    .video-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.5rem;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      flex: 1;
+      min-width: 200px;
+      transition: background 0.2s;
+    }
+
+    .video-meta-row:last-child { border-right: none; }
+    .video-meta-row:hover { background: var(--surface2); }
+
+    .video-meta-key {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    .video-meta-val {
+      font-size: 0.85rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-brand {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+
+    .footer-credit {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    /* PRESENTERS */
+    .presenters {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      animation: fadeUp 0.7s 0.4s ease both;
+    }
+
+    .presenters-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+
+    .presenters-names {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .presenter-name {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.01em;
+    }
+
+    .presenter-index {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--accent);
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.2);
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+    }
+
+    .presenter-divider {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .hero-label { animation: fadeUp 0.6s ease forwards; }
+    .hero-title { animation: fadeUp 0.7s 0.1s ease both; }
+    .hero-desc { animation: fadeUp 0.7s 0.2s ease both; }
+    .hero-stats { animation: fadeUp 0.7s 0.3s ease both; }
+
+    .blink {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .hero-inner { padding: 0 1rem; }
+      section { padding: 5rem 1rem; }
+      .hero-stats { gap: 1.5rem; }
+      .challenge-item { gap: 1.25rem; }
+    }
+
+    @media (max-width: 768px) {
+      nav { position: sticky; }
+      .nav-inner { padding: 0 1rem; }
+      .nav-links { display: none; }
+
+      #home {
+        min-height: auto;
+        padding: 5.5rem 0 3.5rem;
+      }
+
+      section { padding: 4rem 1rem; }
+
+      /* Override inline section paddings used in markup */
+      #db,
+      #history,
+      #core,
+      #platforms,
+      #cloud,
+      #challenges,
+      #video {
+        padding: 4rem 1rem !important;
+      }
+
+      .hero-desc { font-size: 0.95rem; }
+      .hero-stats {
+        gap: 1rem;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stat-num { font-size: 1.35rem; }
+      .section-sub { margin-bottom: 2rem; }
+
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+        gap: 0.9rem;
+      }
+
+      .compare-wrap { grid-template-columns: 1fr; }
+      .compare-col { padding: 1.2rem; }
+      .compare-col:first-child {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .platform-card,
+      .cloud-card,
+      .trio-card,
+      .card {
+        padding: 1.25rem;
+      }
+
+      .challenge-item {
+        grid-template-columns: 1fr;
+        padding: 1.25rem;
+        gap: 0.8rem;
+      }
+
+      .challenge-num { font-size: 1.1rem; }
+
+      .video-meta-row {
+        min-width: 100%;
+        padding: 0.75rem 1rem;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .video-meta-row:last-child { border-bottom: none; }
+
+      .presenters { margin-top: 2rem; }
+      .presenters-names {
+        align-items: flex-start;
+        gap: 0.6rem;
+        flex-direction: column;
+      }
+
+      .presenter-divider { display: none; }
+
+      .footer-inner {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title { line-height: 1; }
+      .hero-label,
+      .section-tag,
+      .video-meta-key {
+        letter-spacing: 0.12em;
+      }
+
+      .hero-stats { grid-template-columns: 1fr; }
+      .tl-item { padding-left: 1.4rem; }
+      .video-frame { border-radius: 3px; }
+      .terminal { padding: 1rem; font-size: 0.72rem; }
+    }
+
+    /* TERMINAL BLOCK */
+    .terminal {
+      background: #030810;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.5rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      overflow-x: auto;
+    }
+
+    .terminal .line { margin-bottom: 0.4rem; }
+    .terminal .prompt { color: var(--accent2); }
+    .terminal .cmd { color: var(--accent); }
+    .terminal .comment { color: #3a5570; }
+    .terminal .string { color: #ffcc66; }
+    .terminal .keyword { color: #ff6b9d; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">DB_PLATFORMS</div>
+    <div class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#db">DBMS/DBaaS</a>
+      <a href="#history">History</a>
+      <a href="#core">Core Trio</a>
+      <a href="#platforms">Platforms</a>
+      <a href="#cloud">Cloud</a>
+      <a href="#challenges">Challenges</a>
+      <a href="#video">Video</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-label">v2.0 — Systems Architecture</div>
+    <h1 class="hero-title">
+      <span class="dim">Managing</span><br>
+      <span class="accent">Data</span> at<br>
+      Scale
+    </h1>
+    <p class="hero-desc">
+      A technical deep-dive into database management systems, cloud platforms, and the evolving landscape of data infrastructure powering modern software.
+    </p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">5+</span>
+        <span class="stat-label">DB Types</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">3</span>
+        <span class="stat-label">Cloud Titans</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">60+</span>
+        <span class="stat-label">Years of Evolution</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num blink">∞</span>
+        <span class="stat-label">Data Growing</span>
+      </div>
+    </div>
+
+    <div class="presenters">
+      <div class="presenters-label">Presented by</div>
+      <div class="presenters-names">
+        <div class="presenter-name">
+          <span class="presenter-index">01</span>
+          Jerome Steven Rosario
+        </div>
+        <div class="presenter-divider">&amp;</div>
+        <div class="presenter-name">
+          <span class="presenter-index">02</span>
+          Ernesto Tolin III
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DBMS vs DBaaS -->
+<section id="db" style="max-width:1280px;margin:0 auto;padding:6rem 2rem;">
+  <div class="section-tag">01 — Fundamentals</div>
+  <h2 class="section-title">DBMS vs DBaaS</h2>
+  <p class="section-sub">Two paradigms for storing and managing data — one gives you control, the other gives you convenience.</p>
+
+  <div class="compare-wrap">
+    <div class="compare-col">
+      <h3>DBMS — Self-Managed</h3>
+      <div class="compare-item"><p><strong>What it is:</strong> Software installed on your own servers (MySQL, PostgreSQL, Oracle). You own the full stack.</p></div>
+      <div class="compare-item"><p><strong>Infrastructure:</strong> You provision hardware, configure OS, tune performance, and manage storage.</p></div>
+      <div class="compare-item"><p><strong>Control:</strong> Full control over query optimization, storage engines, indexing strategies, and network topology.</p></div>
+      <div class="compare-item"><p><strong>Cost model:</strong> High CapEx upfront. Lower cost at large scale with amortized hardware.</p></div>
+      <div class="compare-item"><p><strong>Best for:</strong> On-premise enterprises, regulated industries, latency-sensitive workloads, and custom configurations.</p></div>
+    </div>
+    <div class="compare-col">
+      <h3>DBaaS — Cloud-Managed</h3>
+      <div class="compare-item"><p><strong>What it is:</strong> Database hosted and maintained by a cloud provider (Amazon RDS, Azure SQL, Google Cloud SQL).</p></div>
+      <div class="compare-item"><p><strong>Infrastructure:</strong> Provider handles hardware, OS patches, failover, backups, and scaling automatically.</p></div>
+      <div class="compare-item"><p><strong>Control:</strong> Abstracted infrastructure. You focus on data and queries, not servers.</p></div>
+      <div class="compare-item"><p><strong>Cost model:</strong> OpEx pay-as-you-go. Scales costs with usage — efficient for variable workloads.</p></div>
+      <div class="compare-item"><p><strong>Best for:</strong> Startups, SaaS products, teams that need to ship fast without dedicated database engineers.</p></div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem;">
+    <div class="terminal">
+      <div class="line"><span class="comment">-- Self-managed: you write the config</span></div>
+      <div class="line"><span class="keyword">CREATE</span> DATABASE myapp <span class="keyword">WITH</span> ENCODING <span class="string">'UTF8'</span>;</div>
+      <div class="line"><span class="keyword">ALTER</span> SYSTEM <span class="keyword">SET</span> max_connections = <span class="string">500</span>;</div>
+      <div class="line" style="margin-top:0.75rem;"><span class="comment">-- DBaaS: the cloud just handles it</span></div>
+      <div class="line"><span class="prompt">$</span> <span class="cmd">aws rds create-db-instance \</span></div>
+      <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmd">--db-instance-identifier myapp-db \</span></div>
+      <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmd">--db-instance-class db.t3.medium \</span></div>
+      <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmd">--engine postgres</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HISTORY -->
+<section id="history" style="max-width:1280px;margin:0 auto;padding:6rem 2rem;">
+  <div class="section-tag">02 — Timeline</div>
+  <h2 class="section-title">Database Evolution</h2>
+  <p class="section-sub">From paper ledgers to globally distributed cloud databases — six decades of innovation in data management.</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-era">1950s–1960s</div>
+      <div class="tl-title">Pre-Database Era — Manual Systems</div>
+      <div class="tl-body">Data was stored in physical filing cabinets or magnetic tape. Retrieval was labor-intensive, error-prone, and not machine-optimized. No concurrent access, no structured querying. Programs and data were tightly coupled.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-era">1960s–1970s</div>
+      <div class="tl-title">Navigational Era — Hierarchical & Network Models</div>
+      <div class="tl-body">IBM introduced IMS (Information Management System) using a hierarchical model. CODASYL defined the network model with DBTG. Data had to be traversed via explicit pointers — fast for known access patterns, rigid for everything else. No ad hoc queries.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-era">1970s–1990s</div>
+      <div class="tl-title">Relational Era — SQL Dominates</div>
+      <div class="tl-body">Edgar Codd's 1970 paper "A Relational Model of Data for Large Shared Data Banks" changed everything. Tables, keys, and joins replaced pointer-based navigation. IBM's System R and Oracle's RDBS brought SQL to market. ACID guarantees made relational databases the backbone of enterprise computing.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-era">2000s–2010s</div>
+      <div class="tl-title">NoSQL Era — Web Scale</div>
+      <div class="tl-body">Amazon's Dynamo paper (2007) and Google's Bigtable sparked a revolution. Facebook, Twitter, and LinkedIn needed horizontal scalability that RDBMS couldn't provide cheaply. MongoDB, Cassandra, Redis, and CouchDB emerged — sacrificing ACID for availability and partition tolerance (CAP theorem).</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-era">2012–Present</div>
+      <div class="tl-title">NewSQL & Cloud Native</div>
+      <div class="tl-body">Google Spanner (2012) proved you could have globally distributed, strongly consistent, SQL-compatible databases. CockroachDB and TiDB followed. DBaaS exploded. Serverless databases like PlanetScale and Neon emerged. AI-assisted query optimization and vector databases for LLM workloads are the latest frontier.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CORE TRIO -->
+<section id="core" style="max-width:1280px;margin:0 auto;padding:6rem 2rem;">
+  <div class="section-tag">03 — Paradigms</div>
+  <h2 class="section-title">The Core Trio</h2>
+  <p class="section-sub">Three fundamental approaches to structuring and querying data — each a product of different engineering tradeoffs.</p>
+
+  <div class="grid-3">
+    <div class="trio-card">
+      <div class="trio-label badge-sql">SQL / Relational</div>
+      <div class="trio-name">Relational</div>
+      <div class="trio-desc">Data organized into tables with rows and columns. Relationships enforced via foreign keys. Queries written in declarative SQL. The gold standard for transactional systems requiring strict data integrity.</div>
+      <div class="trio-props">
+        <div class="trio-prop"><span class="prop-key">consistency</span><span class="prop-val">ACID</span></div>
+        <div class="trio-prop"><span class="prop-key">scaling</span><span class="prop-val">Vertical</span></div>
+        <div class="trio-prop"><span class="prop-key">schema</span><span class="prop-val">Rigid / Fixed</span></div>
+        <div class="trio-prop"><span class="prop-key">query lang</span><span class="prop-val">SQL</span></div>
+        <div class="trio-prop"><span class="prop-key">use cases</span><span class="prop-val">Finance, ERP, CMS</span></div>
+        <div class="trio-prop"><span class="prop-key">examples</span><span class="prop-val">PostgreSQL, MySQL, Oracle</span></div>
+      </div>
+    </div>
+    <div class="trio-card">
+      <div class="trio-label badge-nosql">NoSQL</div>
+      <div class="trio-name">Non-Relational</div>
+      <div class="trio-desc">Umbrella term for databases that abandon the table model: document (JSON), key-value, wide-column, and graph. Designed for horizontal scaling, flexible schemas, and high-throughput workloads.</div>
+      <div class="trio-props">
+        <div class="trio-prop"><span class="prop-key">consistency</span><span class="prop-val">BASE / Eventual</span></div>
+        <div class="trio-prop"><span class="prop-key">scaling</span><span class="prop-val">Horizontal</span></div>
+        <div class="trio-prop"><span class="prop-key">schema</span><span class="prop-val">Flexible / Dynamic</span></div>
+        <div class="trio-prop"><span class="prop-key">query lang</span><span class="prop-val">Varies per DB</span></div>
+        <div class="trio-prop"><span class="prop-key">use cases</span><span class="prop-val">Big Data, Real-time, IoT</span></div>
+        <div class="trio-prop"><span class="prop-key">examples</span><span class="prop-val">MongoDB, Redis, Cassandra</span></div>
+      </div>
+    </div>
+    <div class="trio-card">
+      <div class="trio-label badge-newsql">NewSQL</div>
+      <div class="trio-name">Distributed SQL</div>
+      <div class="trio-desc">Best-of-both-worlds systems providing the consistency and familiar SQL interface of relational databases with the horizontal scalability of NoSQL. Built for geo-distributed, cloud-native deployments.</div>
+      <div class="trio-props">
+        <div class="trio-prop"><span class="prop-key">consistency</span><span class="prop-val">ACID + Distributed</span></div>
+        <div class="trio-prop"><span class="prop-key">scaling</span><span class="prop-val">Horizontal</span></div>
+        <div class="trio-prop"><span class="prop-key">schema</span><span class="prop-val">Structured / SQL</span></div>
+        <div class="trio-prop"><span class="prop-key">query lang</span><span class="prop-val">SQL-Compatible</span></div>
+        <div class="trio-prop"><span class="prop-key">use cases</span><span class="prop-val">Global SaaS, Fintech</span></div>
+        <div class="trio-prop"><span class="prop-key">examples</span><span class="prop-val">Spanner, CockroachDB, TiDB</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PLATFORMS -->
+<section id="platforms" style="max-width:1280px;margin:0 auto;padding:6rem 2rem;">
+  <div class="section-tag">04 — Platforms</div>
+  <h2 class="section-title">Top Database Platforms</h2>
+  <p class="section-sub">The most widely deployed and technically capable database systems in production today.</p>
+
+  <div class="grid-2" style="gap:1.25rem;">
+    <div class="platform-card">
+      <div class="platform-badge badge-sql">SQL · Open Source</div>
+      <div class="platform-name">PostgreSQL</div>
+      <div class="platform-desc">The world's most advanced open-source relational database. Supports advanced data types including JSON/JSONB, full-text search, geospatial via PostGIS, custom extensions, and procedural languages. Multi-version concurrency control (MVCC) ensures high read throughput without locking.</div>
+      <div class="platform-tags">
+        <span class="tag">MVCC</span>
+        <span class="tag">JSONB</span>
+        <span class="tag">PostGIS</span>
+        <span class="tag">PL/pgSQL</span>
+        <span class="tag">Extensions</span>
+        <span class="tag">WAL</span>
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="platform-badge badge-sql">SQL · Enterprise</div>
+      <div class="platform-name">Oracle Database</div>
+      <div class="platform-desc">The dominant enterprise database for mission-critical workloads. Features Real Application Clusters (RAC) for active-active failover, Autonomous Database with ML-driven self-tuning, and decades of battle-tested reliability in banking, telecom, and government sectors.</div>
+      <div class="platform-tags">
+        <span class="tag">RAC</span>
+        <span class="tag">Autonomous DB</span>
+        <span class="tag">Exadata</span>
+        <span class="tag">In-Memory</span>
+        <span class="tag">Multitenant</span>
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="platform-badge badge-sql">SQL · Web-Scale</div>
+      <div class="platform-name">MySQL</div>
+      <div class="platform-desc">The most widely deployed open-source RDBMS on the web. Powers Wikipedia, YouTube, and countless WordPress sites. InnoDB storage engine provides ACID compliance. MySQL 8.0 introduced window functions, CTEs, and improved JSON support. Now maintained by Oracle with a vibrant community fork in MariaDB.</div>
+      <div class="platform-tags">
+        <span class="tag">InnoDB</span>
+        <span class="tag">Replication</span>
+        <span class="tag">Group Replication</span>
+        <span class="tag">JSON</span>
+        <span class="tag">Window Functions</span>
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="platform-badge badge-nosql">NoSQL · Document</div>
+      <div class="platform-name">MongoDB Atlas</div>
+      <div class="platform-desc">A fully managed cloud document database platform built on MongoDB's BSON document model. Supports multi-cloud deployments across AWS, GCP, and Azure. Features Atlas Search (full-text), Atlas Vector Search for AI embeddings, Charts, and Data API for serverless access.</div>
+      <div class="platform-tags">
+        <span class="tag">BSON</span>
+        <span class="tag">Atlas Search</span>
+        <span class="tag">Vector Search</span>
+        <span class="tag">Aggregation</span>
+        <span class="tag">Change Streams</span>
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="platform-badge badge-cloud">Cloud · Data Warehouse</div>
+      <div class="platform-name">Snowflake</div>
+      <div class="platform-desc">A purpose-built cloud data warehouse with a unique multi-cluster shared data architecture that separates storage from compute. Virtual warehouses can be independently scaled without downtime. Time Travel and Fail-safe features provide data recovery. The Data Cloud model enables secure cross-organization data sharing.</div>
+      <div class="platform-tags">
+        <span class="tag">Multi-cluster</span>
+        <span class="tag">Time Travel</span>
+        <span class="tag">Data Sharing</span>
+        <span class="tag">Snowpark</span>
+        <span class="tag">Zero-Copy Cloning</span>
+      </div>
+    </div>
+    <div class="platform-card">
+      <div class="platform-badge badge-nosql">Key-Value · In-Memory</div>
+      <div class="platform-name">Redis</div>
+      <div class="platform-desc">Sub-millisecond in-memory data store used as a cache, message broker, and session store. Supports rich data structures: strings, hashes, lists, sets, sorted sets, streams, and geospatial indexes. Redis Sentinel provides high availability; Redis Cluster enables sharded horizontal scaling.</div>
+      <div class="platform-tags">
+        <span class="tag">In-Memory</span>
+        <span class="tag">Pub/Sub</span>
+        <span class="tag">Streams</span>
+        <span class="tag">Lua Scripting</span>
+        <span class="tag">Cluster Mode</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CLOUD -->
+<section id="cloud" style="max-width:1280px;margin:0 auto;padding:6rem 2rem;">
+  <div class="section-tag">05 — Cloud Providers</div>
+  <h2 class="section-title">Cloud Database Titans</h2>
+  <p class="section-sub">The hyperscalers offer managed database services that abstract infrastructure complexity and enable global deployments.</p>
+
+  <div class="grid-3">
+    <div class="cloud-card">
+      <div class="cloud-provider" style="color: var(--accent3);">AWS — Amazon Web Services</div>
+      <div class="cloud-name">Market Leader</div>
+      <div class="cloud-desc">The largest cloud provider with the broadest portfolio of managed database services. 32% global cloud market share. Aurora offers MySQL/PostgreSQL compatibility with up to 5x performance improvement over standard MySQL.</div>
+      <div class="cloud-services">
+        <div class="service-item">Aurora — MySQL/PostgreSQL-compatible distributed SQL</div>
+        <div class="service-item">DynamoDB — Serverless key-value / document NoSQL at petabyte scale</div>
+        <div class="service-item">RDS — Managed relational DB (MySQL, PostgreSQL, Oracle, MSSQL)</div>
+        <div class="service-item">Redshift — Columnar data warehouse for analytics</div>
+        <div class="service-item">ElastiCache — Managed Redis and Memcached</div>
+        <div class="service-item">Neptune — Fully managed graph database</div>
+      </div>
+    </div>
+    <div class="cloud-card">
+      <div class="cloud-provider" style="color: var(--accent);">Azure — Microsoft</div>
+      <div class="cloud-name">Enterprise-Focused</div>
+      <div class="cloud-desc">Deep enterprise integration via Active Directory, Office 365, and hybrid cloud via Azure Arc. Cosmos DB's multi-model API supports SQL, MongoDB, Cassandra, and Gremlin in a single globally distributed service.</div>
+      <div class="cloud-services">
+        <div class="service-item">Cosmos DB — Multi-model, globally distributed, 99.999% SLA</div>
+        <div class="service-item">Azure SQL Database — Managed SQL Server with hyperscale option</div>
+        <div class="service-item">Azure Database for PostgreSQL/MySQL — Flexible server</div>
+        <div class="service-item">Synapse Analytics — Unified analytics and data warehouse</div>
+        <div class="service-item">Azure Cache for Redis — In-memory caching layer</div>
+        <div class="service-item">Table Storage — Low-cost NoSQL key-attribute store</div>
+      </div>
+    </div>
+    <div class="cloud-card">
+      <div class="cloud-provider" style="color: var(--accent2);">GCP — Google Cloud</div>
+      <div class="cloud-name">AI & Analytics First</div>
+      <div class="cloud-desc">Built on Google's internal technology (Bigtable, Spanner, BigQuery). Strongest AI/ML integration in the database space. AlloyDB is a PostgreSQL-compatible database with 4x faster queries than standard PostgreSQL via columnar engine.</div>
+      <div class="cloud-services">
+        <div class="service-item">BigQuery — Serverless petabyte-scale analytics data warehouse</div>
+        <div class="service-item">Cloud Spanner — Globally distributed NewSQL with external consistency</div>
+        <div class="service-item">Bigtable — Managed wide-column NoSQL (powers Google Search)</div>
+        <div class="service-item">AlloyDB — PostgreSQL-compatible with ML accelerated queries</div>
+        <div class="service-item">Firestore — Serverless document database for mobile/web</div>
+        <div class="service-item">Memorystore — Managed Redis and Memcached</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CHALLENGES -->
+<section id="challenges" style="max-width:1280px;margin:0 auto;padding:6rem 2rem;">
+  <div class="section-tag">06 — Open Problems</div>
+  <h2 class="section-title">Modern Challenges</h2>
+  <p class="section-sub">Database engineers in 2025 face a new generation of technical and organizational problems.</p>
+
+  <div class="challenge-row">
+    <div class="challenge-item">
+      <div class="challenge-num">01</div>
+      <div>
+        <div class="challenge-title">Data Volume & Velocity</div>
+        <div class="challenge-body">IoT devices, event streams, and user telemetry generate petabytes of data daily. Traditional batch ETL pipelines can't keep up. Solutions like Apache Kafka, Flink, and streaming databases (RisingWave, Materialize) are redefining real-time data pipelines. Tiered storage (hot/warm/cold) is essential for cost management at scale.</div>
+      </div>
+    </div>
+    <div class="challenge-item">
+      <div class="challenge-num">02</div>
+      <div>
+        <div class="challenge-title">Security, Privacy & Compliance</div>
+        <div class="challenge-body">GDPR, HIPAA, SOC 2, and PCI-DSS impose strict data residency, encryption, and audit requirements. Column-level encryption, row-level security, dynamic data masking, and transparent data encryption (TDE) are now table stakes. Zero-trust database access and secrets management via Vault are growing requirements for regulated workloads.</div>
+      </div>
+    </div>
+    <div class="challenge-item">
+      <div class="challenge-num">03</div>
+      <div>
+        <div class="challenge-title">Multi-Cloud & Hybrid Complexity</div>
+        <div class="challenge-body">Enterprises increasingly run databases across AWS, Azure, GCP, and on-premise simultaneously. Managing schema migrations, cross-cloud replication latency, and consistent access control across environments is deeply complex. Tools like Terraform, Crossplane, and Debezium CDC help but the operational surface area remains vast.</div>
+      </div>
+    </div>
+    <div class="challenge-item">
+      <div class="challenge-num">04</div>
+      <div>
+        <div class="challenge-title">AI & Vector Workloads</div>
+        <div class="challenge-body">LLMs require vector databases to store and query high-dimensional embeddings for semantic search and RAG (Retrieval Augmented Generation). Dedicated solutions like Pinecone, Weaviate, and Qdrant compete with vector extensions in PostgreSQL (pgvector) and MongoDB Atlas. Integrating AI inference directly into the database query layer is the emerging frontier.</div>
+      </div>
+    </div>
+    <div class="challenge-item">
+      <div class="challenge-num">05</div>
+      <div>
+        <div class="challenge-title">Operational Complexity & Observability</div>
+        <div class="challenge-body">Modern stacks run dozens of database types simultaneously. Understanding slow queries, lock contention, connection pool exhaustion, and replication lag across heterogeneous systems demands sophisticated observability. Platforms like Datadog, pganalyze, and VictoriaMetrics provide the monitoring layer; but database observability remains an unsolved problem for many teams.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- VIDEO PRESENTATION -->
+<section id="video" style="max-width:1280px;margin:0 auto;padding:6rem 2rem;">
+  <div class="section-tag">07 — Presentation</div>
+  <h2 class="section-title">Video Presentation</h2>
+  <p class="section-sub">Watch the full walkthrough by Jerome Steven Rosario and Ernesto Tolin III.</p>
+
+  <div class="video-wrap">
+    <div class="video-frame" id="videoContainer">
+      <!-- Thumbnail shown by default -->
+      <div class="video-thumbnail" id="videoThumb" onclick="playVideo()">
+        <img
+          src="https://img.youtube.com/vi/lA4_PcUL_Wc/maxresdefault.jpg"
+          onerror="this.src='https://img.youtube.com/vi/lA4_PcUL_Wc/hqdefault.jpg'"
+          alt="Database Platforms Presentation Thumbnail"
+        />
+        <div class="play-overlay">
+          <div class="play-btn">
+            <svg viewBox="0 0 68 48" width="68" height="48">
+              <path class="play-bg" d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z"/>
+              <path class="play-arrow" d="M45 24 27 14v20z"/>
+            </svg>
+          </div>
+          <div class="play-label">Watch Presentation</div>
+        </div>
+      </div>
+      <!-- iframe injected on click -->
+      <iframe
+        id="videoIframe"
+        style="display:none; width:100%; height:100%; border:none;"
+        title="Database Platforms Presentation"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <div class="video-meta">
+      <div class="video-meta-row">
+        <span class="video-meta-key">Presenters</span>
+        <span class="video-meta-val">Jerome Steven Rosario &amp; Ernesto Tolin III</span>
+      </div>
+      <div class="video-meta-row">
+        <span class="video-meta-key">Topic</span>
+        <span class="video-meta-val">Database Platforms</span>
+      </div>
+      <div class="video-meta-row">
+        <span class="video-meta-key">Source</span>
+        <span class="video-meta-val">youtube.com/watch?v=lA4_PcUL_Wc</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const VIDEO_ID = 'lA4_PcUL_Wc';
+const WATCH_URL = `https://www.youtube.com/watch?v=${VIDEO_ID}`;
+
+function getEmbedUrl() {
+  const params = new URLSearchParams({
+    autoplay: '1',
+    rel: '0',
+    modestbranding: '1',
+    playsinline: '1'
+  });
+
+  // YouTube may reject embeds from file:// because no referrer/origin is sent.
+  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+    params.set('origin', window.location.origin);
+  }
+
+  return `https://www.youtube.com/embed/${VIDEO_ID}?${params.toString()}`;
+}
+
+function playVideo() {
+  const thumb = document.getElementById('videoThumb');
+  const iframe = document.getElementById('videoIframe');
+
+  if (window.location.protocol === 'file:') {
+    window.open(WATCH_URL, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  thumb.style.display = 'none';
+  iframe.src = getEmbedUrl();
+  iframe.style.display = 'block';
+}
+</script>
+
+<div class="divider"></div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">// DB_PLATFORMS — Technical Reference</div>
+    <div class="footer-credit">Created by Rosario & Tolin</div>
+    <div class="footer-credit" style="color: var(--border);">Built with precision &amp; data obsession</div>
+  </div>
+</footer>
+
+</body>
+</html>
